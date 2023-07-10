@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Testing...</title>
+	<style type="text/css">
+  		@import url('https://fonts.googleapis.com/css2?family=Rokkitt&display=swap');
+		body{
+			font-family: 'Montserrat', sans-serif;
+			color: #666666;
+		}
+		#Table{
+			width: 100%;
+			margin: 0;
+			padding: 0;
+			border-collapse: collapse;
+		}
+		.col{
+			padding: 0.6rem;
+			padding-left: 1rem;
+			padding-bottom: 1.2rem;
+			border-bottom: 1px solid #CCCCCC;
+			width: 33.333%;
+		}
+		.hd_col{
+			padding-top: 1.2rem;
+			padding-bottom: 0.6rem;
+			font-size: 250%;
+			border-bottom: 1px solid #CCCCCC;
+			font-family: 'Rokkitt', sans-serif;
+		}
+		.sp_col{
+			border-bottom: 1px solid #CCCCCC;
+			padding: 1.5rem 0rem;
+		}
+		#heading{
+			text-align: center;
+		}
+		.inputs{
+			border: none;
+			width: 100%;
+			color: inherit;
+			padding: 0;
+		}
+		.inputs:focus{
+			outline: none;
+		}
+		#desc::placeholder{
+			color: #cccccc;
+		}
+		#desc, #drp_dwn{
+			font-size: inherit;
+		}
+		#drp_dwn, #date, #time{
+			cursor: pointer;
+		}
+		#add{
+			width: 50%;
+			text-align: right;
+			padding-right: 0.25rem;
+		}
+		#del{
+			width: 50%;
+			padding-left: 0.25rem;
+		}
+		.btn{
+			border: none;
+			border-radius: 0.2rem;
+			outline: none;
+			height: 3rem;
+			width: 10rem;
+			color: white;
+			font-size: inherit;
+			background-color: #5a6673;
+			background-image: url('add.png');
+			background-repeat: no-repeat;
+			padding-left: 1rem;
+		}
+		#task_table{
+			width: 100%;
+		}
+		.checkBox{
+			display: none;
+		}
+		.tempCheckBox{
+			display: table-cell;
+			vertical-align: inherit;
+			padding: 0.6rem;
+			padding-left: 1rem;
+			padding-bottom: 1.2rem;
+			border-bottom: 1px solid #CCCCCC;
+			width: 3%;
+		}
+		.task_cell{
+			padding: 0.6rem;
+			padding-left: 1rem;
+			padding-bottom: 1.2rem;
+			border-bottom: 1px solid #CCCCCC;
+			width: 70%;
+		}
+		.catCell{
+			padding: 0.6rem;
+			padding-left: 1rem;
+			padding-bottom: 1.2rem;
+			border-bottom: 1px solid #CCCCCC;
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+	<table id="Table">
+		<tr>
+			<td colspan="3" class="hd_col" id="heading">
+				TODO App
+			</td>
+		</tr>
+		<tr>
+			<td colspan="3" class="col">
+				DESCRIPTION<br>
+				<!-- What do you need to do? -->
+				<input type="text" name="desc" id="desc" class="inputs" placeholder="What do you need to do?">
+			</td>
+		</tr>
+		<tr>
+			<td class="col">
+				CATEGORY<br>
+				<!-- Choose a category -->
+				<select id="drp_dwn" class="inputs">
+					<option>
+						Choose a category
+					</option>
+					<option>
+						Grocery
+					</option>
+					<option>
+						Household
+					</option>
+					<option>
+						Snacks
+					</option>
+				</select>
+			</td>
+			<td class="col">
+				DUE DATE<br>
+				<!-- dd/mm/yyyy -->
+				<input type="date" name="date" id="date" class="inputs">
+			</td>
+			<td class="col">
+				DUE TIME<br>
+				<!-- --:-- -- -->
+				<input type="time" name="time" id="time" class="inputs">
+			</td>
+		</tr>
+		<tr>
+			<td class="sp_col" id="add">
+				<!-- ADD TASK -->
+				<button id="add_btn" class="btn" onclick="addTableContent('task_table')">ADD TASK</button>
+			</td>
+			<td class="sp_col" colspan="2" id="del">
+				<!-- DELETE TASK -->
+				<button id="del_btn" class="btn" style="background-color: #fc4c4e;background-image: url('bin.png');padding-left: 1.5rem;" onclick="openDeleteTaskbar('del_btn')">DELETE TASK</button>
+			</td>
+		</tr>
+	</table>
+	<table id="task_table"></table>
+	<script type="text/javascript">
+		function createCheckBox() {
+			var box = document.createElement("input");
+			box.type = "checkbox";
+			box.name = "checkBox";
+			// box.className = "checkBox";
+			return box;
+		}
+		function createRow() {
+			var row = document.createElement("tr");
+			row.className = "task_row";
+			return row;
+		}
+		function createCell() {
+			var cell = document.createElement("td");
+			cell.className = "task_cell";
+			return cell;
+		}
+		function elementValue(element_id) {
+			var value = document.getElementById(element_id).value;
+			return value;
+		}
+		function createTableRegistry() {
+			// create a row at one instance
+			var row = createRow();
+			// create 3 cells in each row
+			var chk_cell = createCell();chk_cell.className = 'checkBox';
+			var val_cell = createCell();
+			var cat_cell = createCell();cat_cell.className = 'catCell';
+			// fill each cell with 3 respec. values - chk_box, Values, Category.
+			var chk_box = createCheckBox();
+			val_cell.innerHTML = ""+elementValue("desc")+"<br><br>"+"<img src="+"cal.png"+" width="+"14rem"+" height="+"14rem"+">"+"&nbsp"+elementValue("date")+"&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp"+"<img src="+"clock.png"+" width="+"14rem"+" height="+"14rem"+">"+"&nbsp"+elementValue("time")+"";
+			cat_cell.innerHTML = ""+elementValue("drp_dwn")+"";
+			// define relationship among cells and row.
+			// cell relation
+			chk_cell.appendChild(chk_box);
+			// row level relation
+			row.appendChild(chk_cell);
+			row.appendChild(val_cell);
+			row.appendChild(cat_cell);
+			return row;
+		}
+		function addTableContent(call_id) {
+			if (elementValue("desc") != "") {
+				var row = createTableRegistry();
+				var table = document.getElementById(call_id);
+				table.appendChild(row);
+			}
+		}
+		function openDeleteTaskbar(elm_handle) {
+			var td_handle_array = document.querySelectorAll('.checkBox');
+			if (td_handle_array.length != 0) {
+				document.getElementById('del_btn').textContent = "SAVE TASK";
+				for (var i = td_handle_array.length - 1; i >= 0; i--) {
+					td_handle_array[i].className = "tempCheckBox";
+				}
+				document.getElementById('add_btn').disabled = true;
+				document.getElementById(elm_handle).onclick = function () {
+					removeEntry('del_btn');
+				}
+			}
+		}
+		function removeEntry(elm_handle) {
+			document.getElementById('del_btn').textContent = "DELETE TASK";
+			var table = document.getElementById('task_table');
+			var td_handle_array = document.querySelectorAll('.tempCheckBox');
+			for (var i = td_handle_array.length - 1; i >= 0; i--) {
+				if(td_handle_array[i].firstElementChild.checked) {
+					
+					table.removeChild(td_handle_array[i].parentNode);
+				}
+			}
+			document.getElementById('add_btn').disabled = false;
+			for (var i = td_handle_array.length - 1; i >= 0; i--) {
+				td_handle_array[i].className = "checkBox";
+			}
+			document.getElementById(elm_handle).onclick = function () {
+				openDeleteTaskbar(elm_handle);
+			}
+		}
+	</script>
+</body>
+</html>
