@@ -16,12 +16,15 @@
 			padding: 0;
 			border-collapse: collapse;
 		}
+		#btn_table{
+			width: 100%;
+			border-collapse: collapse;
+		}
 		.col{
 			padding: 0.6rem;
 			padding-left: 1rem;
 			padding-bottom: 1.2rem;
 			border-bottom: 1px solid #CCCCCC;
-			width: 33.333%;
 		}
 		.hd_col{
 			padding-top: 1.2rem;
@@ -106,6 +109,25 @@
 			border-bottom: 1px solid #CCCCCC;
 			text-align: center;
 		}
+		.alert {
+		  	padding: 20px;
+			background-color: #f44336;
+			color: white;
+			display: none;
+		}
+		.closebtn {
+		  	margin-left: 15px;
+		  	color: white;
+		  	font-weight: bold;
+		  	float: right;
+		  	font-size: 22px;
+		  	line-height: 20px;
+		  	cursor: pointer;
+/*		  	transition: 0.3s;*/
+		}
+		.closebtn:hover {
+		  color: black;
+		}
 	</style>
 </head>
 <body>
@@ -116,53 +138,56 @@
 			</td>
 		</tr>
 		<tr>
-			<td colspan="3" class="col">
+			<td colspan="3" class="col" style="width: 100%;">
 				DESCRIPTION<br>
 				<!-- What do you need to do? -->
-				<input type="text" name="desc" id="desc" class="inputs" placeholder="What do you need to do?">
+				<input type="text" name="desc" id="desc" class="inputs" placeholder="What do you need to do?" onchange="chooseDisplayforAlert()">
 			</td>
 		</tr>
 		<tr>
-			<td class="col">
-				CATEGORY<br>
-				<!-- Choose a category -->
+			<td class="col" style="width: 50%;">
+				PRIORITY<br>
+				<!-- Choose a priority -->
 				<select id="drp_dwn" class="inputs">
 					<option>
-						Choose a category
+						Medium
 					</option>
 					<option>
-						Grocery
+						High
 					</option>
 					<option>
-						Household
-					</option>
-					<option>
-						Snacks
+						Low
 					</option>
 				</select>
 			</td>
-			<td class="col">
+			<td class="col" style="width: 25%;">
 				DUE DATE<br>
 				<!-- dd/mm/yyyy -->
 				<input type="date" name="date" id="date" class="inputs">
 			</td>
-			<td class="col">
+			<td class="col" style="width: 25%;">
 				DUE TIME<br>
 				<!-- --:-- -- -->
 				<input type="time" name="time" id="time" class="inputs">
 			</td>
 		</tr>
+	</table>
+	<table id="btn_table">
 		<tr>
 			<td class="sp_col" id="add">
 				<!-- ADD TASK -->
 				<button id="add_btn" class="btn" onclick="addTableContent('task_table')">ADD TASK</button>
 			</td>
-			<td class="sp_col" colspan="2" id="del">
+			<td class="sp_col" id="del">
 				<!-- DELETE TASK -->
 				<button id="del_btn" class="btn" style="background-color: #fc4c4e;background-image: url('bin.png');padding-left: 1.5rem;" onclick="openDeleteTaskbar('del_btn')">DELETE TASK</button>
 			</td>
 		</tr>
 	</table>
+	<div class="alert">
+  		<span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+  		<span id="msg_id"></span>
+	</div>
 	<table id="task_table"></table>
 	<script type="text/javascript">
 		function createCheckBox() {
@@ -195,7 +220,7 @@
 			var cat_cell = createCell();cat_cell.className = 'catCell';
 			// fill each cell with 3 respec. values - chk_box, Values, Category.
 			var chk_box = createCheckBox();
-			val_cell.innerHTML = ""+elementValue("desc")+"<br><br>"+"<img src="+"cal.png"+" width="+"14rem"+" height="+"14rem"+">"+"&nbsp"+elementValue("date")+"&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp"+"<img src="+"clock.png"+" width="+"14rem"+" height="+"14rem"+">"+"&nbsp"+elementValue("time")+"";
+			val_cell.innerHTML = ""+elementValue("desc")+"<br><br>"+"<img src="+"cal.png"+" width="+"14rem"+" height="+"14rem"+">"+"&nbsp"+"<span class="+"date_span"+">"+elementValue("date")+"</span>"+"&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp"+"<img src="+"clock.png"+" width="+"14rem"+" height="+"14rem"+">"+"&nbsp"+"<span class="+"time_span"+">"+elementValue("time")+"</span>"+"";
 			cat_cell.innerHTML = ""+elementValue("drp_dwn")+"";
 			// define relationship among cells and row.
 			// cell relation
@@ -211,6 +236,12 @@
 				var row = createTableRegistry();
 				var table = document.getElementById(call_id);
 				table.appendChild(row);
+				if (table.childNodes.length > 1) {	
+					sort();
+				}
+			}
+			else{
+				showAlertMessage(".alert", "msg_id", "Description should not be empty");
 			}
 		}
 		function openDeleteTaskbar(elm_handle) {
@@ -244,6 +275,45 @@
 				openDeleteTaskbar(elm_handle);
 			}
 		}
+		function sort() {
+			// Priority -> Due date -> Due time -> Arbitrary;
+			var task_table = document.getElementById('task_table');
+			var priority_handle_array = document.querySelectorAll('.catCell');
+			// var date_handle_array = document.querySelectorAll('.date_span');
+			// var time_handle_array = document.querySelectorAll('.time_span');
+			var temp_array = [];
+			var priority_array = ['High', 'Medium', 'Low'];var k = 0;
+			for (var j = 0; j < priority_array.length; j++) {
+				for (var i = 0; i < priority_handle_array.length; i++) {
+					if (priority_handle_array[i].textContent == priority_array[j]) {
+						temp_array[k] = priority_handle_array[i].parentNode;k++;
+					}
+				}
+			}
+			while (task_table.firstChild) {
+  				task_table.removeChild(task_table.firstChild);
+			}
+			for (var i = 0; i < temp_array.length; i++) {
+				task_table.appendChild(temp_array[i]);
+			}
+		}
+		function showAlertMessage(caller_class, msg_id, msg) {
+			var elmHandle = document.querySelector(caller_class);
+			var displayHandle = document.getElementById(msg_id);
+			displayHandle.textContent = msg;
+			elmHandle.style.display = "block";
+		}
+		function chooseDisplayforAlert() {
+			var elm = document.getElementById('desc');
+			if (elm.value) {
+				document.querySelector('.alert').style.display = "none";
+			}
+			else{
+				showAlertMessage(".alert", "msg_id", "Description should not be empty")
+			}
+		}
+		// give users the option to edit if their description matches
+		
 	</script>
 </body>
 </html>
